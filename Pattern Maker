@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מחולל תבניות קיפול ספרים | Lilou Books</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+:root {
+--primary-color: #FFB6C1;
+--secondary-color: #F5EFE7;
+--text-color: #333;
+--cream-bg: #F8F4EE;
+--accent-brown: #8B6F47;
+}
+
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+line-height: 1.6;
+color: var(--text-color);
+background: linear-gradient(135deg, var(--secondary-color) 0%, var(--cream-bg) 100%);
+min-height: 100vh;
+}
+
+.container {
+max-width: 1400px;
+margin: 0 auto;
+padding: 2rem;
+}
+
+.header {
+text-align: center;
+margin-bottom: 3rem;
+}
+
+.header h1 {
+font-size: 2.5rem;
+color: var(--accent-brown);
+margin-bottom: 1rem;
+}
+
+.header p {
+font-size: 1.2rem;
+color: #666;
+max-width: 800px;
+margin: 0 auto;
+}
+
+.main-grid {
+display: grid;
+grid-template-columns: 400px 1fr;
+gap: 2rem;
+margin-bottom: 2rem;
+}
+
+.upload-settings {
+background: white;
+border-radius: 20px;
+padding: 2rem;
+box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+height: fit-content;
+position: sticky;
+top: 2rem;
+}
+
+.upload-settings h2 {
+color: var(--accent-brown);
+font-size: 1.5rem;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+
+.upload-area {
+border: 3px dashed var(--primary-color);
+border-radius: 15px;
+padding: 2rem;
+text-align: center;
+cursor: pointer;
+transition: all 0.3s;
+margin-bottom: 2rem;
+background: var(--cream-bg);
+}
+
+.upload-area:hover {
+background: var(--secondary-color);
+border-color: var(--accent-brown);
+}
+
+.upload-icon {
+font-size: 3rem;
+margin-bottom: 1rem;
+}
+
+.uploaded-preview {
+margin-top: 1rem;
+border-radius: 10px;
+overflow: hidden;
+}
+
+.uploaded-preview img {
+width: 100%;
+border-radius: 10px;
+}
+
+.settings-group {
+margin-bottom: 1.5rem;
+}
+
+.settings-group label {
+display: block;
+font-weight: 600;
+color: var(--accent-brown);
+margin-bottom: 0.5rem;
+}
+
+.settings-group input,
+.settings-group select {
+width: 100%;
+padding: 0.8rem;
+border: 2px solid #ddd;
+border-radius: 10px;
+font-size: 1rem;
+transition: border-color 0.3s;
+}
+
+.settings-group input:focus,
+.settings-group select:focus {
+outline: none;
+border-color: var(--primary-color);
+}
+
+.settings-group .help-text {
+font-size: 0.85rem;
+color: #666;
+margin-top: 0.3rem;
+}
+
+.pattern-display {
+background: white;
+border-radius: 20px;
+padding: 2rem;
+box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.pattern-display h2 {
+color: var(--accent-brown);
+font-size: 1.5rem;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+
+.view-toggle {
+display: flex;
+gap: 1rem;
+justify-content: center;
+margin-bottom: 2rem;
+}
+
+.view-toggle button {
+padding: 0.8rem 2rem;
+border: 2px solid var(--primary-color);
+background: white;
+color: var(--accent-brown);
+border-radius: 50px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.view-toggle button.active {
+background: var(--primary-color);
+color: white;
+}
+
+.view-toggle button:hover {
+transform: translateY(-2px);
+}
+
+.pattern-preview {
+position: relative;
+min-height: 400px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.pattern-canvas {
+border: 2px solid #ddd;
+border-radius: 10px;
+max-width: 100%;
+}
+
+.empty-state {
+text-align: center;
+color: #999;
+padding: 3rem;
+}
+
+.empty-state .icon {
+font-size: 4rem;
+margin-bottom: 1rem;
+}
+
+.loading-state {
+text-align: center;
+padding: 3rem;
+}
+
+.spinner {
+border: 4px solid var(--secondary-color);
+border-top: 4px solid var(--primary-color);
+border-radius: 50%;
+width: 50px;
+height: 50px;
+animation: spin 1s linear infinite;
+margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+0% { transform: rotate(0deg); }
+100% { transform: rotate(360deg); }
+}
+
+.table-container {
+max-height: 500px;
+overflow-y: auto;
+border-radius: 10px;
+}
+
+.pattern-table {
+width: 100%;
+border-collapse: collapse;
+}
+
+.pattern-table thead {
+background: var(--secondary-color);
+position: sticky;
+top: 0;
+z-index: 10;
+}
+
+.pattern-table th,
+.pattern-table td {
+padding: 1rem;
+text-align: right;
+border-bottom: 1px solid #eee;
+}
+
+.pattern-table th {
+color: var(--accent-brown);
+font-weight: 600;
+}
+
+.subscription-overlay {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0,0,0,0.8);
+display: none;
+align-items: center;
+justify-content: center;
+z-index: 1000;
+padding: 2rem;
+}
+
+.subscription-overlay.active {
+display: flex;
+}
+
+.subscription-modal {
+background: white;
+border-radius: 20px;
+padding: 3rem;
+max-width: 600px;
+width: 100%;
+text-align: center;
+position: relative;
+animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+from {
+transform: translateY(50px);
+opacity: 0;
+}
+to {
+transform: translateY(0);
+opacity: 1;
+}
+}
+
+.close-modal {
+position: absolute;
+top: 1rem;
+left: 1rem;
+background: none;
+border: none;
+font-size: 2rem;
+cursor: pointer;
+color: #999;
+}
+
+.subscription-modal h2 {
+color: var(--accent-brown);
+font-size: 2rem;
+margin-bottom: 1rem;
+}
+
+.subscription-modal p {
+color: #666;
+font-size: 1.1rem;
+margin-bottom: 2rem;
+}
+
+.subscription-options {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 1.5rem;
+margin-top: 2rem;
+}
+
+.subscription-card {
+background: var(--cream-bg);
+border: 3px solid var(--primary-color);
+border-radius: 15px;
+padding: 2rem;
+cursor: pointer;
+transition: all 0.3s;
+position: relative;
+}
+
+.subscription-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 25px rgba(255, 182, 193, 0.3);
+}
+
+.subscription-card.recommended {
+border-color: var(--accent-brown);
+}
+
+.subscription-card.recommended::before {
+content: '⭐ מומלץ';
+position: absolute;
+top: -15px;
+right: 50%;
+transform: translateX(50%);
+background: var(--accent-brown);
+color: white;
+padding: 0.3rem 1rem;
+border-radius: 20px;
+font-size: 0.85rem;
+font-weight: 600;
+}
+
+.subscription-card h3 {
+color: var(--accent-brown);
+font-size: 1.5rem;
+margin-bottom: 0.5rem;
+}
+
+.subscription-card .price {
+font-size: 2.5rem;
+color: var(--primary-color);
+font-weight: bold;
+margin: 1rem 0;
+}
+
+.subscription-card .period {
+color: #666;
+font-size: 0.9rem;
+}
+
+.subscription-card .savings {
+background: var(--primary-color);
+color: white;
+padding: 0.5rem 1rem;
+border-radius: 20px;
+font-size: 0.9rem;
+font-weight: 600;
+margin-top: 1rem;
+display: inline-block;
+}
+
+.subscription-card ul {
+list-style: none;
+padding: 0;
+margin: 1.5rem 0;
+text-align: right;
+}
+
+.subscription-card li {
+padding: 0.5rem 0;
+color: #666;
+}
+
+.subscription-card li::before {
+content: '✓';
+color: var(--primary-color);
+font-weight: bold;
+margin-left: 0.5rem;
+}
+
+.subscribe-btn {
+background: var(--primary-color);
+color: white;
+border: none;
+padding: 1rem 2rem;
+border-radius: 50px;
+font-size: 1.1rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+width: 100%;
+}
+
+.subscribe-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+}
+
+.download-buttons {
+display: flex;
+gap: 1rem;
+justify-content: center;
+margin-top: 2rem;
+}
+
+.download-btn {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+background: var(--primary-color);
+color: white;
+border: none;
+padding: 1rem 2rem;
+border-radius: 50px;
+font-size: 1.1rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.download-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+}
+
+.download-btn:disabled {
+background: #ccc;
+cursor: not-allowed;
+}
+
+.preview-notice {
+background: linear-gradient(135deg, var(--primary-color), #FFD4D9);
+color: white;
+padding: 1.5rem;
+border-radius: 10px;
+text-align: center;
+margin-bottom: 2rem;
+}
+
+.preview-notice h3 {
+color: white;
+margin-bottom: 0.5rem;
+}
+
+@media (max-width: 968px) {
+.main-grid {
+grid-template-columns: 1fr;
+}
+
+.upload-settings {
+position: static;
+}
+
+.subscription-options {
+grid-template-columns: 1fr;
+}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>🎨 מחולל תבניות קיפול ספרים</h1>
+<p>העלו תמונה והפכו אותה לתבנית קיפול ספרים מקצועית בקלות! קבלו תבנית מדויקת עם מדידות בס"מ לכל עמוד.</p>
+</div>
+
+<div class="main-grid">
+<!-- Upload & Settings Panel -->
+<div class="upload-settings">
+<h2>📤 העלאת תמונה והגדרות</h2>
+<div class="upload-area" id="uploadArea">
+<div class="upload-icon">📸</div>
+<p><strong>לחצו להעלאת תמונה</strong></p>
+<p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">PNG, JPG או SVG</p>
+<input type="file" id="imageInput" accept="image/*" style="display: none;">
+</div>
+<div id="previewContainer" style="display: none;">
+<div class="uploaded-preview">
+<img id="previewImage" alt="תמונה שהועלתה">
+</div>
+</div>
+
+<div class="settings-group">
+<label for="pages">מספר עמודים בספר</label>
+<input type="number" id="pages" value="300" min="50" max="1000">
+<div class="help-text">מומלץ: 200-400 עמודים</div>
+</div>
+
+<div class="settings-group">
+<label for="bookHeight">גובה הספר (ס"מ)</label>
+<input type="number" id="bookHeight" value="21.0" step="0.1" min="10" max="40">
+<div class="help-text">גובה סטנדרטי: 21 ס"מ</div>
+</div>
+
+<div class="settings-group">
+<label for="foldType">סוג קיפול</label>
+<select id="foldType">
+<option value="mmf">MMF (Measure Mark Fold)</option>
+<option value="cut-fold">Cut & Fold (חיתוך וקיפול)</option>
+</select>
+<div class="help-text" id="foldTypeHelp">יוצר קיפולים משולשים בנקודות מסומנות</div>
+</div>
+
+<div class="settings-group">
+<label for="threshold">רגישות: <span id="thresholdValue">128</span></label>
+<input type="range" id="threshold" min="0" max="255" value="128">
+<div class="help-text">התאימו כדי לשלוט באיזה חלקים יקופלו</div>
+</div>
+</div>
+
+<!-- Pattern Display -->
+<div class="pattern-display">
+<h2>👁️ תצוגת התבנית</h2>
+
+<div class="preview-notice">
+<h3>✨ תצוגה מקדימה חינמית</h3>
+<p>ראו איך התמונה שלכם הופכת לתבנית. להורדת התבנית המלאה נדרש מנוי.</p>
+</div>
+
+<div class="view-toggle">
+<button id="graphicalBtn" class="active">תצוגה גרפית</button>
+<button id="tableBtn">תצוגת טבלה</button>
+</div>
+
+<div class="pattern-preview">
+<div id="emptyState" class="empty-state">
+<div class="icon">📖</div>
+<p>העלו תמונה כדי ליצור תבנית</p>
+</div>
+
+<div id="loadingState" class="loading-state" style="display: none;">
+<div class="spinner"></div>
+<p>מעבד את התמונה...</p>
+</div>
+
+<div id="canvasContainer" style="display: none;">
+<canvas id="patternCanvas" class="pattern-canvas"></canvas>
+</div>
+
+<div id="tableContainer" class="table-container" style="display: none;">
+<table class="pattern-table">
+<thead>
+<tr>
+<th>עמוד</th>
+<th id="colHeader1">סימון מס' 1</th>
+<th id="colHeader2">סימון מס' 2</th>
+<th id="colHeader3">סימון מס' 3</th>
+</tr>
+</thead>
+<tbody id="tableBody">
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="downloadSection" style="display: none;">
+<div class="download-buttons">
+<button class="download-btn" id="downloadBtn">
+<span>⬇️</span>
+<span>הורידו תבנית</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Subscription Modal -->
+<div class="subscription-overlay" id="subscriptionOverlay">
+<div class="subscription-modal">
+<button class="close-modal" id="closeModal">×</button>
+<h2>🎁 הצטרפו למנוי והורידו תבניות ללא הגבלה</h2>
+<p>קבלו גישה מלאה למחולל התבניות וצרו כמה תבניות שתרצו!</p>
+
+<div class="subscription-options">
+<div class="subscription-card">
+<h3>מנוי חודשי</h3>
+<div class="price">€12</div>
+<div class="period">לחודש</div>
+<ul>
+<li>תבניות ללא הגבלה</li>
+<li>ייצוא CSV + תמונה</li>
+<li>כל סוגי הקיפולים</li>
+<li>ביטול בכל עת</li>
+</ul>
+<button class="subscribe-btn" onclick="window.open('https://pay.grow.link/754dc8226e8d3c2379738c73eac9aeb9-Mjc1NDQ4Mw', '_blank')">
+הצטרפו עכשיו
+</button>
+</div>
+
+<div class="subscription-card recommended">
+<h3>מנוי שנתי</h3>
+<div class="price">€89</div>
+<div class="period">לשנה</div>
+<div class="savings">חסכו €55!</div>
+<ul>
+<li>תבניות ללא הגבלה</li>
+<li>ייצוא CSV + תמונה</li>
+<li>כל סוגי הקיפולים</li>
+<li>תמיכה מועדפת</li>
+</ul>
+<button class="subscribe-btn" onclick="window.open('https://pay.grow.link/754dc8226e8d3c2379738c73eac9aeb9-Mjc1NDQ4Mw', '_blank')">
+הצטרפו עכשיו
+</button>
+</div>
+</div>
+
+<p style="margin-top: 2rem; font-size: 0.9rem; color: #999;">
+💳 תשלום מאובטח דרך Grow
+</p>
+</div>
+</div>
+
+<canvas id="hiddenCanvas" style="display: none;"></canvas>
+
+<script>
+let currentImage = null;
+let currentPattern = null;
+let currentView = 'graphical';
+let hasSubscription = false; // Set to true after payment
+
+const imageInput = document.getElementById('imageInput');
+const uploadArea = document.getElementById('uploadArea');
+const previewContainer = document.getElementById('previewContainer');
+const previewImage = document.getElementById('previewImage');
+const patternCanvas = document.getElementById('patternCanvas');
+const hiddenCanvas = document.getElementById('hiddenCanvas');
+const emptyState = document.getElementById('emptyState');
+const loadingState = document.getElementById('loadingState');
+const canvasContainer = document.getElementById('canvasContainer');
+const tableContainer = document.getElementById('tableContainer');
+const downloadSection = document.getElementById('downloadSection');
+const subscriptionOverlay = document.getElementById('subscriptionOverlay');
+const graphicalBtn = document.getElementById('graphicalBtn');
+const tableBtn = document.getElementById('tableBtn');
+const closeModal = document.getElementById('closeModal');
+const downloadBtn = document.getElementById('downloadBtn');
+
+// Upload area click
+uploadArea.addEventListener('click', () => imageInput.click());
+
+// Fold type help text
+document.getElementById('foldType').addEventListener('change', (e) => {
+const helpText = document.getElementById('foldTypeHelp');
+if (e.target.value === 'mmf') {
+helpText.textContent = 'יוצר קיפולים משולשים בנקודות מסומנות';
+} else {
+helpText.textContent = 'חותך בנקודות עליונות ותחתונות, מקפל באמצע';
+}
+});
+
+// Threshold slider
+document.getElementById('threshold').addEventListener('input', (e) => {
+document.getElementById('thresholdValue').textContent = e.target.value;
+if (currentImage) {
+generatePattern();
+}
+});
+
+// Settings change
+['pages', 'bookHeight', 'foldType'].forEach(id => {
+document.getElementById(id).addEventListener('change', () => {
+if (currentImage) {
+generatePattern();
+}
+});
+});
+
+// Image upload
+imageInput.addEventListener('change', (e) => {
+const file = e.target.files[0];
+if (file) {
+const reader = new FileReader();
+reader.onload = (event) => {
+const img = new Image();
+img.onload = () => {
+currentImage = img;
+previewImage.src = event.target.result;
+previewContainer.style.display = 'block';
+generatePattern();
+};
+img.src = event.target.result;
+};
+reader.readAsDataURL(file);
+}
+});
+
+// View toggle
+graphicalBtn.addEventListener('click', () => {
+currentView = 'graphical';
+graphicalBtn.classList.add('active');
+tableBtn.classList.remove('active');
+updateView();
+});
+
+tableBtn.addEventListener('click', () => {
+currentView = 'table';
+tableBtn.classList.add('active');
+graphicalBtn.classList.remove('active');
+updateView();
+});
+
+function updateView() {
+if (currentPattern) {
+if (currentView === 'graphical') {
+canvasContainer.style.display = 'block';
+tableContainer.style.display = 'none';
+drawGraphicalPattern();
+} else {
+canvasContainer.style.display = 'none';
+tableContainer.style.display = 'block';
+drawTablePattern();
+}
+}
+}
+
+function generatePattern() {
+emptyState.style.display = 'none';
+loadingState.style.display = 'block';
+canvasContainer.style.display = 'none';
+tableContainer.style.display = 'none';
+
+setTimeout(() => {
+processImage();
+loadingState.style.display = 'none';
+downloadSection.style.display = 'block';
+updateView();
+}, 500);
+}
+
+function processImage() {
+const ctx = hiddenCanvas.getContext('2d');
+const pages = parseInt(document.getElementById('pages').value);
+const bookHeight = parseFloat(document.getElementById('bookHeight').value);
+const foldType = document.getElementById('foldType').value;
+const threshold = parseInt(document.getElementById('threshold').value);
+
+hiddenCanvas.width = pages;
+hiddenCanvas.height = 200;
+
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, hiddenCanvas.width, hiddenCanvas.height);
+ctx.drawImage(currentImage, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+
+const imageData = ctx.getImageData(0, 0, hiddenCanvas.width, hiddenCanvas.height);
+const pattern = [];
+
+for (let x = 0; x < hiddenCanvas.width; x++) {
+const pageFolds = [];
+let inRegion = false;
+let regionStart = 0;
+
+for (let y = 0; y < hiddenCanvas.height; y++) {
+const idx = (y * hiddenCanvas.width + x) * 4;
+const gray = 0.299 * imageData.data[idx] + 0.587 * imageData.data[idx + 1] + 0.114 * imageData.data[idx + 2];
+const shouldMark = gray < threshold;
+
+if (shouldMark && !inRegion) {
+regionStart = y;
+inRegion = true;
+} else if (!shouldMark && inRegion) {
+const top = (regionStart / hiddenCanvas.height) * bookHeight;
+const bottom = (y / hiddenCanvas.height) * bookHeight;
+
+if (foldType === 'mmf') {
+pageFolds.push({
+type: 'mmf',
+top: top.toFixed(2),
+bottom: bottom.toFixed(2)
+});
+} else {
+const middle = (top + bottom) / 2;
+pageFolds.push({
+type: 'cut-fold',
+topCut: top.toFixed(2),
+fold: middle.toFixed(2),
+bottomCut: bottom.toFixed(2)
+});
+}
+inRegion = false;
+}
+}
+
+if (inRegion) {
+const top = (regionStart / hiddenCanvas.height) * bookHeight;
+const bottom = bookHeight;
+
+if (foldType === 'mmf') {
+pageFolds.push({
+type: 'mmf',
+top: top.toFixed(2),
+bottom: bottom.toFixed(2)
+});
+} else {
+const middle = (top + bottom) / 2;
+pageFolds.push({
+type: 'cut-fold',
+topCut: top.toFixed(2),
+fold: middle.toFixed(2),
+bottomCut: bottom.toFixed(2)
+});
+}
+}
+
+pattern.push({ page: x + 1, folds: pageFolds });
+}
+
+currentPattern = pattern;
+}
+
+function drawGraphicalPattern() {
+const ctx = patternCanvas.getContext('2d');
+const bookHeight = parseFloat(document.getElementById('bookHeight').value);
+const width = Math.min(800, currentPattern.length * 2);
+const height = 400;
+
+patternCanvas.width = width;
+patternCanvas.height = height;
+
+ctx.fillStyle = 'white';
+ctx.fillRect(0, 0, width, height);
+
+const pageWidth = width / currentPattern.length;
+
+currentPattern.forEach((page, idx) => {
+const x = idx * pageWidth;
+
+ctx.strokeStyle = '#e5e7eb';
+ctx.lineWidth = 0.5;
+ctx.beginPath();
+ctx.moveTo(x, 0);
+ctx.lineTo(x, height);
+ctx.stroke();
+
+page.folds.forEach(fold => {
+if (fold.type === 'mmf') {
+const top = (parseFloat(fold.top) / bookHeight) * height;
+const bottom = (parseFloat(fold.bottom) / bookHeight) * height;
+
+ctx.fillStyle = '#1f2937';
+ctx.fillRect(x, top, pageWidth, bottom - top);
+
+ctx.strokeStyle = '#60a5fa';
+ctx.lineWidth = 1;
+ctx.beginPath();
+ctx.moveTo(x, top);
+ctx.lineTo(x + pageWidth, (top + bottom) / 2);
+ctx.lineTo(x, bottom);
+ctx.stroke();
+} else {
+const topCut = (parseFloat(fold.topCut) / bookHeight) * height;
+const foldLine = (parseFloat(fold.fold) / bookHeight) * height;
+const bottomCut = (parseFloat(fold.bottomCut) / bookHeight) * height;
+
+ctx.strokeStyle = '#ef4444';
+ctx.lineWidth = 2;
+ctx.beginPath();
+ctx.moveTo(x, topCut);
+ctx.lineTo(x + pageWidth, topCut);
+ctx.stroke();
+ctx.beginPath();
+ctx.moveTo(x, bottomCut);
+ctx.lineTo(x + pageWidth, bottomCut);
+ctx.stroke();
+
+ctx.strokeStyle = '#3b82f6';
+ctx.lineWidth = 2;
+ctx.setLineDash([5, 5]);
+ctx.beginPath();
+ctx.moveTo(x, foldLine);
+ctx.lineTo(x + pageWidth, foldLine);
+ctx.stroke();
+ctx.setLineDash([]);
+
+ctx.fillStyle = 'rgba(31, 41, 55, 0.3)';
+ctx.fillRect(x, topCut, pageWidth, bottomCut - topCut);
+}
+});
+});
+}
+
+function drawTablePattern() {
+const foldType = document.getElementById('foldType').value;
+const tableBody = document.getElementById('tableBody');
+const colHeader1 = document.getElementById('colHeader1');
+const colHeader2 = document.getElementById('colHeader2');
+const colHeader3 = document.getElementById('colHeader3');
+
+if (foldType === 'mmf') {
+colHeader1.textContent = 'סימון עליון (ס"מ)';
+colHeader2.textContent = 'סימון תחתון (ס"מ)';
+colHeader3.style.display = 'none';
+} else {
+colHeader1.textContent = 'חיתוך עליון (ס"מ)';
+colHeader2.textContent = 'קו קיפול (ס"מ)';
+colHeader3.textContent = 'חיתוך תחתון (ס"מ)';
+colHeader3.style.display = 'table-cell';
+}
+
+tableBody.innerHTML = '';
+currentPattern.slice(0, 20).forEach(page => {
+if (page.folds.length === 0) {
+const row = document.createElement('tr');
+row.innerHTML = `<td>${page.page}</td><td colspan="${foldType === 'mmf' ? 2 : 3}" style="color: #999;">אין קיפולים</td>`;
+tableBody.appendChild(row);
+} else {
+page.folds.forEach((fold, idx) => {
+const row = document.createElement('tr');
+if (foldType === 'mmf') {
+row.innerHTML = `
+<td>${idx === 0 ? page.page : ''}</td>
+<td>${fold.top}</td>
+<td>${fold.bottom}</td>
+`;
+} else {
+row.innerHTML = `
+<td>${idx === 0 ? page.page : ''}</td>
+<td>${fold.topCut}</td>
+<td>${fold.fold}</td>
+<td>${fold.bottomCut}</td>
+`;
+}
+tableBody.appendChild(row);
+});
+}
+});
+
+if (currentPattern.length > 20) {
+const row = document.createElement('tr');
+row.innerHTML = `<td colspan="${foldType === 'mmf' ? 3 : 4}" style="text-align: center; color: #999; padding: 2rem;">
+מוצגים 20 עמודים ראשונים. הצטרפו למנוי לקבלת התבנית המלאה.
+</td>`;
+tableBody.appendChild(row);
+}
+}
+
+// Download button
+downloadBtn.addEventListener('click', () => {
+subscriptionOverlay.classList.add('active');
+});
+
+// Close modal
+closeModal.addEventListener('click', () => {
+subscriptionOverlay.classList.remove('active');
+});
+
+subscriptionOverlay.addEventListener('click', (e) => {
+if (e.target === subscriptionOverlay) {
+subscriptionOverlay.classList.remove('active');
+}
+});
+
+// Check for subscription (this would be integrated with your payment system)
+function checkSubscription() {
+// Check if user has paid - integrate with Grow payment system
+// For now, this is a placeholder
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('subscribed') === 'true') {
+hasSubscription = true;
+downloadBtn.textContent = '⬇️ הורידו תבנית מלאה';
+downloadBtn.onclick = downloadPattern;
+}
+}
+
+function downloadPattern() {
+if (!hasSubscription) {
+subscriptionOverlay.classList.add('active');
+return;
+}
+
+// Export CSV
+const foldType = document.getElementById('foldType').value;
+let csv = '';
+
+if (foldType === 'mmf') {
+csv = 'עמוד,מספר קיפול,סימון עליון (ס"מ),סימון תחתון (ס"מ)\n';
+currentPattern.forEach(page => {
+if (page.folds.length === 0) {
+csv += `${page.page},0,-,-\n`;
+} else {
+page.folds.forEach((fold, idx) => {
+csv += `${page.page},${idx + 1},${fold.top},${fold.bottom}\n`;
+});
+}
+});
+} else {
+csv = 'עמוד,מספר סימון,חיתוך עליון (ס"מ),קו קיפול (ס"מ),חיתוך תחתון (ס"מ)\n';
+currentPattern.forEach(page => {
+if (page.folds.length === 0) {
+csv += `${page.page},0,-,-,-\n`;
+} else {
+page.folds.forEach((fold, idx) => {
+csv += `${page.page},${idx + 1},${fold.topCut},${fold.fold},${fold.bottomCut}\n`;
+});
+}
+});
+}
+
+const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `lilou-books-pattern-${foldType}-${Date.now()}.csv`;
+a.click();
+URL.revokeObjectURL(url);
+
+// Also download image
+setTimeout(() => {
+const imgData = patternCanvas.toDataURL('image/png');
+const link = document.createElement('a');
+link.href = imgData;
+link.download = `lilou-books-pattern-${foldType}-${Date.now()}.png`;
+link.click();
+}, 500);
+}
+
+checkSubscription();
+</script>
+</body>
+</html>
